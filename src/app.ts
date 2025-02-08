@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import mainRouter from "./routes/routes";
 import createHttpError from "http-errors";
 import errorHandler from "./middlewares/errorHandler";
+import helmet from "helmet";
+import morgan from "morgan";
 
 dotenv.config();
 const app: Application = express();
@@ -14,6 +16,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
+app.use(helmet());
+app.use(morgan("dev"));
 app.use("/api/v1", mainRouter);
 
 app.get("/", (req: Request, res: Response) => {
