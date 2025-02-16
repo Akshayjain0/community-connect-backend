@@ -4,8 +4,9 @@ export interface IInterestedDomain {
 }
 
 export interface IVolunteer {
-	id: string; // UUID
-	name: string;
+	_id: string; // UUID
+	fullName: string;
+	userName: string;
 	email: string;
 	password: string;
 	location: string;
@@ -15,6 +16,11 @@ export interface IVolunteer {
 	availability: string;
 	joined_projects: string[]; // UUIDs of projects
 	profile_picture: string;
+	refreshToken: string;
+	isModified(path: string): boolean;
+	generateAccessToken(): string;
+	generateRefreshToken(): string;
+	isPasswordCorrect(password: string): Promise<boolean>;
 	created_at: Date;
 	updated_at: Date;
 }

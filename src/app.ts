@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import mainRouter from "./routes/routes";
 import createHttpError from "http-errors";
-import errorHandler from "./middlewares/errorHandler";
+import { errorHandler } from "./middlewares";
 import helmet from "helmet";
 import morgan from "morgan";
 
