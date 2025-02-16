@@ -33,25 +33,31 @@ OrganizerSchema.methods.isPasswordCorrect = async function (
 	return await bcrypt.compare(password, this.password);
 };
 
-OrganizerSchema.methods.generateAccessToken = function () {
+OrganizerSchema.methods.generateAccessToken = function (
+	role: "volunteer" | "organizer"
+) {
 	return jwt.sign(
 		{
 			_id: this._id,
+			role: role,
 			email: this.email,
 			organizer_name: this.organizer_name,
 		},
-		process.env.ACCESS_TOKEN_SECRET as string,
+		process.env.TOKEN_SECRET as string,
 		{
 			expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
 		}
 	);
 };
-OrganizerSchema.methods.generateRefreshToken = function () {
+OrganizerSchema.methods.generateRefreshToken = function (
+	role: "volunteer" | "organizer"
+) {
 	return jwt.sign(
 		{
 			_id: this._id,
+			role: role,
 		},
-		process.env.REFRESH_TOKEN_SECRET as string,
+		process.env.TOKEN_SECRET as string,
 		{
 			expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
 		}

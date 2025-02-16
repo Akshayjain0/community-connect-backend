@@ -4,15 +4,18 @@ import createError from "http-errors";
 import Organizer from "../../../models/organizer.model";
 import ApiResponse from "../../../utils/apiResponse";
 
-const generateAccessTokenAndRefreshToken = async (organizerId: string) => {
+const generateAccessTokenAndRefreshToken = async (
+	organizerId: string,
+	role: string
+) => {
 	try {
 		const organizer = await Organizer.findById(organizerId);
 		if (!organizer) {
 			throw createError(404, "Organizer not found.");
 		}
 
-		const accessToken: string = organizer.generateAccessToken();
-		const refreshToken: string = organizer.generateRefreshToken();
+		const accessToken: string = organizer.generateAccessToken(role);
+		const refreshToken: string = organizer.generateRefreshToken(role);
 
 		// 🔹 Update refreshToken in the database
 		organizer.refreshToken = refreshToken;
@@ -54,7 +57,10 @@ export const organizerLoginController = asyncHandler(
 
 		// ✅ Generate and Save Tokens
 		const { accessToken, refreshToken } =
-			await generateAccessTokenAndRefreshToken(existingOrganizer._id);
+			await generateAccessTokenAndRefreshToken(
+				existingOrganizer._id,
+				"organizer"
+			);
 
 		// const options = {
 		// 	httpOnly: true,
@@ -89,3 +95,5 @@ export const organizerLoginController = asyncHandler(
 			.json(response);
 	}
 );
+
+

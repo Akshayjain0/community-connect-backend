@@ -10,6 +10,8 @@ import {
 	volunteerLoginController,
 	volunteerRegisterController,
 } from "../controllers/auth";
+import { auth } from "../middlewares/auth.middleware";
+import { logOutUser } from "../controllers/auth/logoutUser.controller";
 
 const authRouter = Router();
 
@@ -28,5 +30,8 @@ authRouter.post(
 	organizerRegisterController
 );
 authRouter.post("/organizerLogin", organizerLoginController);
+
+// 👋🏻 Protected Routes
+authRouter.post("/logout", auth, logOutUser);
 
 export default authRouter;

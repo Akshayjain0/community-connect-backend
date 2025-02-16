@@ -4,15 +4,18 @@ import Volunteer from "../../../models/volunteer.model";
 import createError from "http-errors";
 import ApiResponse from "../../../utils/apiResponse";
 
-const generateAccessTokenAndRefreshToken = async (volunteerId: string) => {
+const generateAccessTokenAndRefreshToken = async (
+	volunteerId: string,
+	role: string
+) => {
 	try {
 		const volunteer = await Volunteer.findById(volunteerId);
 		if (!volunteer) {
 			throw createError(404, "Volunteer not found.");
 		}
 
-		const accessToken: string = volunteer.generateAccessToken();
-		const refreshToken: string = volunteer.generateRefreshToken();
+		const accessToken: string = volunteer.generateAccessToken(role);
+		const refreshToken: string = volunteer.generateRefreshToken(role);
 
 		// 🔹 Update refreshToken in the database
 		volunteer.refreshToken = refreshToken;
@@ -54,7 +57,10 @@ export const volunteerLoginController = asyncHandler(
 
 		// ✅ Generate and Save Tokens
 		const { accessToken, refreshToken } =
-			await generateAccessTokenAndRefreshToken(existingVolunteer._id);
+			await generateAccessTokenAndRefreshToken(
+				existingVolunteer._id,
+				"volunteer"
+			);
 
 		const accessTokenOptions = {
 			httpOnly: true,

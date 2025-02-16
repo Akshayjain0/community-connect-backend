@@ -24,7 +24,7 @@ export const volunteerRegisterController = asyncHandler(
 			$or: [{ email }, { userName }],
 		});
 		if (existingVolunteer) {
-			throw createError(409, "Volunteer with this email already exits.");
+			throw createError(409, "Volunteer with this email or userName already exits.");
 		}
 		if (!req.file) {
 			throw createError(400, "No profile image uploaded.");
@@ -46,13 +46,15 @@ export const volunteerRegisterController = asyncHandler(
 			joined_projects: [],
 			profile_picture: file.location,
 		});
-		const refreshToken: string = newVolunteer.generateRefreshToken();
+		const refreshToken: string =
+			newVolunteer.generateRefreshToken("volunteer");
 		newVolunteer.refreshToken = refreshToken; // Store refresh token in DB
 
 		await newVolunteer.save(); // ✅ Now refreshToken is saved
 
 		// ✅ Generate the access token
-		const accessToken: string = newVolunteer.generateAccessToken();
+		const accessToken: string =
+			newVolunteer.generateAccessToken("volunteer");
 
 		const response = new ApiResponse(
 			200,

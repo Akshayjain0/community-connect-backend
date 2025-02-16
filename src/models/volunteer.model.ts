@@ -42,34 +42,32 @@ VolunteerSchema.methods.isPasswordCorrect = async function (
 	return await bcrypt.compare(password, this.password);
 };
 
-VolunteerSchema.methods.generateAccessToken = function () {
-	console.log(
-		"process.env.ACCESS_TOKEN_SECRET",
-		process.env.ACCESS_TOKEN_SECRET
-	);
-	console.log(
-		"process.env.ACCESS_TOKEN_EXPIRY",
-		process.env.ACCESS_TOKEN_EXPIRY
-	);
+VolunteerSchema.methods.generateAccessToken = function (
+	role: "volunteer" | "organizer"
+) {
 	return jwt.sign(
 		{
 			_id: this._id,
+			role: role,
 			email: this.email,
 			fullName: this.fullName,
 		},
-		process.env.ACCESS_TOKEN_SECRET as string,
+		process.env.TOKEN_SECRET as string,
 		{
 			expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
 		}
 	);
 };
 
-VolunteerSchema.methods.generateRefreshToken = function () {
+VolunteerSchema.methods.generateRefreshToken = function (
+	role: "volunteer" | "organizer"
+) {
 	return jwt.sign(
 		{
 			_id: this._id,
+			role: role,
 		},
-		process.env.REFRESH_TOKEN_SECRET as string,
+		process.env.TOKEN_SECRET as string,
 		{
 			expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
 		}

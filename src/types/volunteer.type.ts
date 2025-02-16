@@ -18,8 +18,8 @@ export interface IVolunteer {
 	profile_picture: string;
 	refreshToken: string;
 	isModified(path: string): boolean;
-	generateAccessToken(): string;
-	generateRefreshToken(): string;
+	generateAccessToken(role: string): string;
+	generateRefreshToken(role: string): string;
 	isPasswordCorrect(password: string): Promise<boolean>;
 	created_at: Date;
 	updated_at: Date;

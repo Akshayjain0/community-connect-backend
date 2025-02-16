@@ -64,12 +64,14 @@ export const organizerRegisterController = asyncHandler(
 			created_projects: [],
 			logo: file.location,
 		});
-		const refreshToken: string = newOrganizer.generateRefreshToken();
+		const refreshToken: string =
+			newOrganizer.generateRefreshToken("organizer");
 		newOrganizer.refreshToken = refreshToken;
 
 		await newOrganizer.save();
 
-		const accessToken: string = newOrganizer.generateAccessToken();
+		const accessToken: string =
+			newOrganizer.generateAccessToken("organizer");
 
 		const response = new ApiResponse(
 			200,
