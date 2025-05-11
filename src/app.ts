@@ -12,7 +12,12 @@ dotenv.config();
 const app: Application = express();
 
 app.use(express.json({ limit: "16kb" }));
-app.use(cors());
+app.use(
+	cors({
+		origin: "http://localhost:5173", // must be exact
+		credentials: true, // allow cookies, auth headers
+	})
+);
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());

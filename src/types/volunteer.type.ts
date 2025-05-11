@@ -9,7 +9,10 @@ export interface IVolunteer {
 	userName: string;
 	email: string;
 	password: string;
-	location: string;
+	state: string;
+	city: string;
+	locality: string;
+	// location: string;
 	interested_domains: IInterestedDomain[];
 	volunteer_status: string;
 	willing_to_work_in_other_domains: boolean;
@@ -17,6 +20,7 @@ export interface IVolunteer {
 	joined_projects: string[]; // UUIDs of projects
 	profile_picture: string;
 	refreshToken: string;
+	interested_projects: string[];
 	isModified(path: string): boolean;
 	generateAccessToken(role: string): string;
 	generateRefreshToken(role: string): string;

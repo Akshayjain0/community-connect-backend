@@ -17,7 +17,9 @@ export const organizerRegisterController = asyncHandler(
 			contact_number,
 			email,
 			password,
-			location,
+			locality,
+			city,
+			state,
 		} = req.body;
 
 		// Check all fields
@@ -28,7 +30,9 @@ export const organizerRegisterController = asyncHandler(
 				contact_number,
 				email,
 				password,
-				location,
+				locality,
+				city,
+				state,
 			].some((field) => typeof field !== "string" || field.trim() === "")
 		) {
 			throw createError(400, "All fields are required");
@@ -47,10 +51,12 @@ export const organizerRegisterController = asyncHandler(
 		}
 
 		// Check file for logo
-		if (!req.file) {
-			throw createError(400, "No logo image uploaded");
-		}
-		const file = req.file as MulterS3File;
+		// if (!req.file) {
+		// 	throw createError(400, "No logo image uploaded");
+		// }
+		
+		const file = req.file as MulterS3File | undefined;
+		const fileLocation = file?.location ?? null;
 		const uuid = uuidv4();
 		console.log("Its runs", uuid);
 		const newOrganizer = new Organizer({
@@ -60,9 +66,11 @@ export const organizerRegisterController = asyncHandler(
 			contact_number,
 			email,
 			password,
-			location,
+			locality,
+			city,
+			state,
 			created_projects: [],
-			logo: file.location,
+			logo: fileLocation,
 		});
 		const refreshToken: string =
 			newOrganizer.generateRefreshToken("organizer");

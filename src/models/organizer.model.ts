@@ -7,13 +7,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const OrganizerSchema = new Schema<IOrganizer>({
-	_id: { type: String, required: true, unique: true, default: uuidv4 }, // UUID
+	_id: { type: String, required: true, default: uuidv4 }, // UUID
 	organizer_name: { type: String, required: true },
 	userName: { type: String, required: true, unique: true },
 	contact_number: { type: String, required: true, unique: true },
 	email: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
-	location: { type: String, required: true },
+	state: { type: String, required: true },
+	city: { type: String, required: true },
+	locality: { type: String, required: true },
 	created_projects: [{ type: Schema.Types.String, ref: "Project" }], // UUIDs of projects
 	logo: { type: String, required: false },
 	refreshToken: { type: String },

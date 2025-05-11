@@ -5,7 +5,9 @@ export interface IOrganizer {
 	contact_number: string;
 	email: string;
 	password: string;
-	location: string;
+	state: string;
+	city: string;
+	locality: string;
 	created_projects: string[]; // UUIDs of projects
 	logo: string;
 	refreshToken: string;

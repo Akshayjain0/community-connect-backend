@@ -13,18 +13,27 @@ const InterestedDomainSchema = new Schema({
 });
 
 const VolunteerSchema = new Schema<IVolunteer>({
-	_id: { type: String, required: true, unique: true, default: uuidv4 }, // UUID
+	_id: { type: String, required: true, default: uuidv4 }, // UUID
 	fullName: { type: String, required: true },
 	userName: { type: String, required: true, unique: true },
 	email: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
-	location: { type: String, required: true },
+	state: { type: String, required: true },
+	city: { type: String, required: true },
+	locality: { type: String, required: true },
+	// location: { type: String, required: true },
 	interested_domains: { type: [InterestedDomainSchema], default: [] },
 	volunteer_status: { type: String, required: true },
 	willing_to_work_in_other_domains: { type: Boolean, default: false },
 	availability: { type: String, required: true },
-	joined_projects: [{ type: Schema.Types.String, ref: "Project" }], // UUIDs of projects
-	profile_picture: { type: String, required: false },
+	joined_projects: [{ type: Schema.Types.String, ref: "Project" }],
+	interested_projects: [{ type: Schema.Types.String, ref: "Project" }], // UUIDs of projects
+	profile_picture: {
+		type: String,
+		default: null,
+		required: false,
+	},
+
 	refreshToken: { type: String },
 	created_at: { type: Date, default: Date.now },
 	updated_at: { type: Date, default: Date.now },
