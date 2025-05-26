@@ -1,11 +1,14 @@
 import { Router } from "express";
 import { auth } from "../middlewares/auth.middleware";
 import {
-	createProject,
+	
 	expressInterest,
 	getInterestedVolunteers,
 	getMyInterestedProjects,
 } from "../controllers/project";
+import { getMyProjects } from "../controllers/project/getMyProjects";
+import { getVolunteerFeed } from "../controllers/project/getVolunteerFeed";
+import { createProject } from "../controllers/project/createProject";
 
 const projectRouter = Router();
 
@@ -18,10 +21,10 @@ projectRouter.post("/:id/interest", auth, expressInterest);
 projectRouter.get("/:id/interested-volunteers", auth, getInterestedVolunteers);
 
 // GET /volunteers/me/interested-projects — volunteer views their interested projects
-projectRouter.get(
-	"/volunteers/me/interested",
-	auth,
-	getMyInterestedProjects
-);
+projectRouter.get("/volunteers/me/interested", auth, getMyInterestedProjects);
+
+// ✅ New routes
+projectRouter.get("/my-projects", auth, getMyProjects);
+projectRouter.get("/feed", auth, getVolunteerFeed);
 
 export default projectRouter;

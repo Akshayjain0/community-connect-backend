@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 
 import { logoUpload, profileUpload } from "../middlewares";
 
@@ -30,6 +30,14 @@ authRouter.post(
 	organizerRegisterController
 );
 authRouter.post("/organizerLogin", organizerLoginController);
+
+// Me Route
+authRouter.get("/me", auth, async (req: Request, res: Response) => {
+	res.status(200).json({
+		user: req.user,
+		role: req.role,
+	});
+});
 
 // 👋🏻 Protected Routes
 authRouter.post("/logout", auth, logOutUser);
