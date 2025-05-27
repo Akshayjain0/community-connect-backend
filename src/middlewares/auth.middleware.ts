@@ -55,6 +55,110 @@
 
 // middleware/auth.ts
 // middleware/auth.ts
+// import { NextFunction, Request, Response } from "express";
+// import asyncHandler from "express-async-handler";
+// import createError from "http-errors";
+// import jwt, { TokenExpiredError } from "jsonwebtoken";
+// import Volunteer from "../models/volunteer.model";
+// import Organizer from "../models/organizer.model";
+// import { TokenPayload } from "../types/auth.types";
+
+// export const auth = asyncHandler(
+// 	async (req: Request, res: Response, next: NextFunction) => {
+// 		const accessToken =
+// 			req.cookies?.accessToken ||
+// 			req.header("Authorization")?.replace("Bearer ", "");
+// 		const refreshToken = req.cookies?.refreshToken;
+
+// 		const attachUserAndContinue = async (decoded: TokenPayload) => {
+// 			const user = await getUser(decoded);
+// 			if (!user) throw createError(404, "User not found");
+
+// 			console.log(
+// 				"✅ Access granted for user:",
+// 				decoded.email || decoded._id
+// 			);
+// 			req.user = user;
+// 			req.role = decoded.role;
+// 			return next();
+// 		};
+// 		console.log("process.env.TOKEN_SECRET", process.env.TOKEN_SECRET);
+// 		try {
+// 			if (!accessToken)
+// 				throw new TokenExpiredError("No access token", new Date());
+// 			console.log("process.env.TOKEN_SECRET", process.env.TOKEN_SECRET);
+// 			const decoded = jwt.verify(
+// 				accessToken,
+// 				process.env.TOKEN_SECRET!
+// 			) as TokenPayload;
+// 			console.log(
+// 				"✅ Access token valid for:",
+// 				decoded.email || decoded._id
+// 			);
+// 			return await attachUserAndContinue(decoded);
+// 		} catch (err) {
+// 			if (!(err instanceof TokenExpiredError)) {
+// 				console.warn("❌ Invalid access token");
+// 				return next(createError(401, "Invalid token"));
+// 			}
+
+// 			try {
+// 				if (!refreshToken)
+// 					throw createError(401, "No refresh token available");
+
+// 				const decodedRefresh = jwt.verify(
+// 					refreshToken,
+// 					process.env.TOKEN_SECRET!
+// 				) as TokenPayload;
+// 				const user = await getUser(decodedRefresh);
+// 				if (!user)
+// 					throw createError(401, "User not found for refresh token");
+
+// 				const newAccessToken = jwt.sign(
+// 					{
+// 						_id: user._id,
+// 						role: decodedRefresh.role,
+// 						email: user.email,
+// 					},
+// 					process.env.TOKEN_SECRET!,
+// 					{ expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "15m" }
+// 				);
+
+// 				res.cookie("accessToken", newAccessToken, {
+// 					httpOnly: true,
+// 					secure: process.env.NODE_ENV === "production",
+// 					sameSite: "none",
+// 					maxAge: 1000 * 60 * 15,
+// 				});
+
+// 				console.log(
+// 					"🔁 Access token refreshed for:",
+// 					decodedRefresh.email || decodedRefresh._id
+// 				);
+// 				req.user = user;
+// 				req.role = decodedRefresh.role;
+// 				return next();
+// 			} catch (refreshErr) {
+// 				console.warn("❌ Failed to refresh access token");
+// 				res.clearCookie("accessToken");
+// 				res.clearCookie("refreshToken");
+// 				return next(
+// 					createError(403, "Invalid or expired refresh token")
+// 				);
+// 			}
+// 		}
+// 	}
+// );
+
+// const getUser = async (decoded: TokenPayload) => {
+// 	if (decoded.role === "volunteer") {
+// 		return await Volunteer.findById(decoded._id).select("-password");
+// 	} else if (decoded.role === "organizer") {
+// 		return await Organizer.findById(decoded._id).select("-password");
+// 	}
+// 	return null;
+// };
+
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import createError from "http-errors";
@@ -65,54 +169,78 @@ import { TokenPayload } from "../types/auth.types";
 
 export const auth = asyncHandler(
 	async (req: Request, res: Response, next: NextFunction) => {
+		console.log("🔍 Checking cookies and headers for access token...");
 		const accessToken =
 			req.cookies?.accessToken ||
 			req.header("Authorization")?.replace("Bearer ", "");
 		const refreshToken = req.cookies?.refreshToken;
 
-		const attachUserAndContinue = async (decoded: TokenPayload) => {
-			const user = await getUser(decoded);
-			if (!user) throw createError(404, "User not found");
+		console.log("🔑 Access Token:", accessToken);
+		console.log("🔑 Refresh Token:", refreshToken);
 
-			console.log(
-				"✅ Access granted for user:",
-				decoded.email || decoded._id
-			);
+		const attachUserAndContinue = async (decoded: TokenPayload) => {
+			console.log("🔍 Fetching user with ID:", decoded._id);
+			const user = await getUser(decoded);
+			if (!user) {
+				console.error("❌ User not found in DB");
+				throw createError(404, "User not found");
+			}
+
+			console.log("✅ Access granted for:", decoded.email || decoded._id);
 			req.user = user;
 			req.role = decoded.role;
 			return next();
 		};
-		console.log("process.env.TOKEN_SECRET", process.env.TOKEN_SECRET);
+
+		console.log("🛡️ Verifying access token...");
+		console.log("ENV TOKEN_SECRET:", process.env.TOKEN_SECRET);
+
 		try {
-			if (!accessToken)
+			if (!accessToken) {
 				throw new TokenExpiredError("No access token", new Date());
-			console.log("process.env.TOKEN_SECRET", process.env.TOKEN_SECRET);
-			const decoded = jwt.verify(
-				accessToken,
-				process.env.TOKEN_SECRET!
-			) as TokenPayload;
-			console.log(
-				"✅ Access token valid for:",
-				decoded.email || decoded._id
-			);
-			return await attachUserAndContinue(decoded);
+			} else {
+				const decoded = jwt.verify(
+					accessToken,
+					process.env.TOKEN_SECRET!
+				) as TokenPayload;
+
+				console.log(
+					"✅ Access token valid for:",
+					decoded.email || decoded._id
+				);
+				return await attachUserAndContinue(decoded);
+			}
 		} catch (err) {
+			console.warn("⚠️ Access token verification failed:", err);
+
 			if (!(err instanceof TokenExpiredError)) {
-				console.warn("❌ Invalid access token");
+				console.warn("❌ Invalid access token - not expired");
 				return next(createError(401, "Invalid token"));
 			}
 
 			try {
-				if (!refreshToken)
+				console.log("🔁 Attempting to verify refresh token...");
+
+				if (!refreshToken) {
+					console.warn("❌ No refresh token available");
 					throw createError(401, "No refresh token available");
+				}
 
 				const decodedRefresh = jwt.verify(
 					refreshToken,
 					process.env.TOKEN_SECRET!
 				) as TokenPayload;
+
+				console.log(
+					"✅ Refresh token verified for:",
+					decodedRefresh.email
+				);
+
 				const user = await getUser(decodedRefresh);
-				if (!user)
+				if (!user) {
+					console.error("❌ User not found for refresh token");
 					throw createError(401, "User not found for refresh token");
+				}
 
 				const newAccessToken = jwt.sign(
 					{
@@ -131,15 +259,16 @@ export const auth = asyncHandler(
 					maxAge: 1000 * 60 * 15,
 				});
 
-				console.log(
-					"🔁 Access token refreshed for:",
-					decodedRefresh.email || decodedRefresh._id
-				);
+				console.log("🔁 New access token issued for:", user.email);
+
 				req.user = user;
 				req.role = decodedRefresh.role;
 				return next();
 			} catch (refreshErr) {
-				console.warn("❌ Failed to refresh access token");
+				console.error(
+					"❌ Refresh token verification failed:",
+					refreshErr
+				);
 				res.clearCookie("accessToken");
 				res.clearCookie("refreshToken");
 				return next(
@@ -151,6 +280,7 @@ export const auth = asyncHandler(
 );
 
 const getUser = async (decoded: TokenPayload) => {
+	console.log("🔎 getUser() role:", decoded.role, "ID:", decoded._id);
 	if (decoded.role === "volunteer") {
 		return await Volunteer.findById(decoded._id).select("-password");
 	} else if (decoded.role === "organizer") {
