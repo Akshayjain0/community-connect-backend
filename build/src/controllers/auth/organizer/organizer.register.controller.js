@@ -1,4 +1,10 @@
 "use strict";
+// import { Request, Response } from "express";
+// import asyncHandler from "express-async-handler";
+// import createError from "http-errors";
+// import { v4 as uuidv4 } from "uuid";
+// import Organizer from "../../../models/organizer.model";
+// import ApiResponse from "../../../utils/apiResponse";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18,10 +24,21 @@ const http_errors_1 = __importDefault(require("http-errors"));
 const uuid_1 = require("uuid");
 const organizer_model_1 = __importDefault(require("../../../models/organizer.model"));
 const apiResponse_1 = __importDefault(require("../../../utils/apiResponse"));
+const accessTokenOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 15 * 60 * 1000, // 15 minutes
+    sameSite: "None",
+};
+const refreshTokenOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    sameSite: "None",
+};
 exports.organizerRegisterController = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { organizer_name, userName, contact_number, email, password, locality, city, state, } = req.body;
-    // Check all fields
     if ([
         organizer_name,
         userName,
@@ -34,21 +51,15 @@ exports.organizerRegisterController = (0, express_async_handler_1.default)((req,
     ].some((field) => typeof field !== "string" || field.trim() === "")) {
         throw (0, http_errors_1.default)(400, "All fields are required");
     }
-    // Check organizer exists or not
     const existingOrganizer = yield organizer_model_1.default.findOne({
         $or: [{ email }, { contact_number }, { userName }],
     });
     if (existingOrganizer) {
         throw (0, http_errors_1.default)(409, "Organizer with this email or contact number already exits.");
     }
-    // Check file for logo
-    // if (!req.file) {
-    // 	throw createError(400, "No logo image uploaded");
-    // }
     const file = req.file;
     const fileLocation = (_a = file === null || file === void 0 ? void 0 : file.location) !== null && _a !== void 0 ? _a : null;
     const uuid = (0, uuid_1.v4)();
-    console.log("Its runs", uuid);
     const newOrganizer = new organizer_model_1.default({
         _id: uuid,
         organizer_name,
@@ -66,9 +77,11 @@ exports.organizerRegisterController = (0, express_async_handler_1.default)((req,
     newOrganizer.refreshToken = refreshToken;
     yield newOrganizer.save();
     const accessToken = newOrganizer.generateAccessToken("organizer");
-    const response = new apiResponse_1.default(200, {
+    const response = new apiResponse_1.default(201, {
         organizer: newOrganizer,
-        accessToken,
-    }, "Organizer Registered Successfully");
-    res.status(201).json(response);
+    }, "Organizer registered and logged in successfully");
+    res.status(201)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
+        .json(response);
 }));
