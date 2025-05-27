@@ -104,7 +104,7 @@ export const auth = asyncHandler(async (req: Request, res: Response, next: NextF
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 1000 * 60 * 15
       });
 

@@ -16,7 +16,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json({ limit: "16kb" }));
 app.use((0, cors_1.default)({
-    origin: "http://localhost:5173", // must be exact
+    origin: "http://13.202.85.79:8021", // must be exact
     credentials: true, // allow cookies, auth headers
 }));
 app.use(express_1.default.urlencoded({ extended: true, limit: "16kb" }));

@@ -23,13 +23,13 @@ const accessTokenOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 15 * 60 * 1000, // 15 minutes
-    sameSite: "Strict",
+    sameSite: "None",
 };
 const refreshTokenOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    sameSite: "Strict",
+    sameSite: "None",
 };
 exports.volunteerRegisterController = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;

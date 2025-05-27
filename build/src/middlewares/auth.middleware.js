@@ -94,7 +94,7 @@ exports.auth = (0, express_async_handler_1.default)((req, res, next) => __awaite
             res.cookie("accessToken", newAccessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
+                sameSite: "none",
                 maxAge: 1000 * 60 * 15
             });
             console.log("🔁 Access token refreshed for:", decodedRefresh.email || decodedRefresh._id);

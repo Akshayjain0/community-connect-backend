@@ -63,13 +63,13 @@ exports.organizerLoginController = (0, express_async_handler_1.default)((req, re
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 15 * 60 * 1000, // 15 minutes for Access Token
-        sameSite: "Strict",
+        sameSite: "None",
     };
     const refreshTokenOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for Refresh Token
-        sameSite: "Strict",
+        sameSite: "None",
     };
     const response = new apiResponse_1.default(200, {
         data: existingOrganizer,
