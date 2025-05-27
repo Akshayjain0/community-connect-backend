@@ -254,9 +254,9 @@ export const auth = asyncHandler(
 
 				res.cookie("accessToken", newAccessToken, {
 					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "none",
-					maxAge: 1000 * 60 * 15,
+					secure: false, // 👈 allow cookies over HTTP
+					sameSite: "lax" as unknown as boolean, // 👈 allow cookies on same-site GET
+					maxAge: 15 * 60 * 1000, // 15 minutes
 				});
 
 				console.log("🔁 New access token issued for:", user.email);

@@ -116,9 +116,9 @@ exports.auth = (0, express_async_handler_1.default)((req, res, next) => __awaite
             }, process.env.TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "15m" });
             res.cookie("accessToken", newAccessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "none",
-                maxAge: 1000 * 60 * 15,
+                secure: false, // 👈 allow cookies over HTTP
+                sameSite: "lax", // 👈 allow cookies on same-site GET
+                maxAge: 15 * 60 * 1000, // 15 minutes
             });
             console.log("🔁 New access token issued for:", user.email);
             req.user = user;

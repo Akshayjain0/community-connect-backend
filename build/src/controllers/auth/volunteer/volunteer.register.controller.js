@@ -19,17 +19,29 @@ const uuid_1 = require("uuid");
 const volunteer_model_1 = __importDefault(require("../../../models/volunteer.model"));
 const domain_model_1 = __importDefault(require("../../../models/domain.model"));
 const apiResponse_1 = __importDefault(require("../../../utils/apiResponse"));
+// const accessTokenOptions = {
+// 	httpOnly: true,
+// 	secure: process.env.NODE_ENV === "production",
+// 	maxAge: 15 * 60 * 1000, // 15 minutes
+// 	sameSite: "None" as unknown as boolean,
+// };
+// const refreshTokenOptions = {
+// 	httpOnly: true,
+// 	secure: process.env.NODE_ENV === "production",
+// 	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+// 	sameSite: "None" as unknown as boolean,
+// };
 const accessTokenOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false, // 👈 allow cookies over HTTP
+    sameSite: "lax", // 👈 allow cookies on same-site GET
     maxAge: 15 * 60 * 1000, // 15 minutes
-    sameSite: "None",
 };
 const refreshTokenOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false, // 👈 allow cookies over HTTP
+    sameSite: "lax", // 👈 allow cookies on same-site GET
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    sameSite: "None",
 };
 exports.volunteerRegisterController = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;

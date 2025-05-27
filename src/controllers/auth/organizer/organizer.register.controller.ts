@@ -106,18 +106,17 @@ interface MulterS3File extends Express.Multer.File {
 
 const accessTokenOptions = {
 	httpOnly: true,
-	secure: process.env.NODE_ENV === "production",
+	secure: false, // 👈 allow cookies over HTTP
+	sameSite: "lax" as unknown as boolean, // 👈 allow cookies on same-site GET
 	maxAge: 15 * 60 * 1000, // 15 minutes
-	sameSite: "None" as unknown as boolean,
 };
 
 const refreshTokenOptions = {
 	httpOnly: true,
-	secure: process.env.NODE_ENV === "production",
+	secure: false, // 👈 allow cookies over HTTP
+	sameSite: "lax" as unknown as boolean, // 👈 allow cookies on same-site GET
 	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-	sameSite: "None" as unknown as boolean,
 };
-
 export const organizerRegisterController = asyncHandler(
 	async (req: Request, res: Response): Promise<void> => {
 		const {

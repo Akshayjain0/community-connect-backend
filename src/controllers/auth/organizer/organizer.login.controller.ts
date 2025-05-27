@@ -71,16 +71,16 @@ export const organizerLoginController = asyncHandler(
 
 		const accessTokenOptions = {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			maxAge: 15 * 60 * 1000, // 15 minutes for Access Token
-			sameSite: "None" as unknown as boolean,
+			secure: false, // 👈 allow cookies over HTTP
+			sameSite: "lax" as unknown as boolean, // 👈 allow cookies on same-site GET
+			maxAge: 15 * 60 * 1000, // 15 minutes
 		};
 
 		const refreshTokenOptions = {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for Refresh Token
-			sameSite: "None" as unknown as boolean,
+			secure: false, // 👈 allow cookies over HTTP
+			sameSite: "lax" as unknown as boolean, // 👈 allow cookies on same-site GET
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 		};
 
 		const response = new ApiResponse(200, {
@@ -95,5 +95,3 @@ export const organizerLoginController = asyncHandler(
 			.json(response);
 	}
 );
-
-

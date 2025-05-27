@@ -61,15 +61,15 @@ exports.organizerLoginController = (0, express_async_handler_1.default)((req, re
     // };
     const accessTokenOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 15 * 60 * 1000, // 15 minutes for Access Token
-        sameSite: "None",
+        secure: false, // 👈 allow cookies over HTTP
+        sameSite: "lax", // 👈 allow cookies on same-site GET
+        maxAge: 15 * 60 * 1000, // 15 minutes
     };
     const refreshTokenOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for Refresh Token
-        sameSite: "None",
+        secure: false, // 👈 allow cookies over HTTP
+        sameSite: "lax", // 👈 allow cookies on same-site GET
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };
     const response = new apiResponse_1.default(200, {
         data: existingOrganizer,
