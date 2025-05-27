@@ -60,7 +60,8 @@ const volunteer_model_1 = __importDefault(require("../models/volunteer.model"));
 const organizer_model_1 = __importDefault(require("../models/organizer.model"));
 exports.auth = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
-    const accessToken = ((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.accessToken) || ((_b = req.header("Authorization")) === null || _b === void 0 ? void 0 : _b.replace("Bearer ", ""));
+    const accessToken = ((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.accessToken) ||
+        ((_b = req.header("Authorization")) === null || _b === void 0 ? void 0 : _b.replace("Bearer ", ""));
     const refreshToken = (_c = req.cookies) === null || _c === void 0 ? void 0 : _c.refreshToken;
     const attachUserAndContinue = (decoded) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield getUser(decoded);
@@ -71,9 +72,11 @@ exports.auth = (0, express_async_handler_1.default)((req, res, next) => __awaite
         req.role = decoded.role;
         return next();
     });
+    console.log("process.env.TOKEN_SECRET", process.env.TOKEN_SECRET);
     try {
         if (!accessToken)
             throw new jsonwebtoken_1.TokenExpiredError("No access token", new Date());
+        console.log("process.env.TOKEN_SECRET", process.env.TOKEN_SECRET);
         const decoded = jsonwebtoken_1.default.verify(accessToken, process.env.TOKEN_SECRET);
         console.log("✅ Access token valid for:", decoded.email || decoded._id);
         return yield attachUserAndContinue(decoded);
@@ -90,12 +93,16 @@ exports.auth = (0, express_async_handler_1.default)((req, res, next) => __awaite
             const user = yield getUser(decodedRefresh);
             if (!user)
                 throw (0, http_errors_1.default)(401, "User not found for refresh token");
-            const newAccessToken = jsonwebtoken_1.default.sign({ _id: user._id, role: decodedRefresh.role, email: user.email }, process.env.TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "15m" });
+            const newAccessToken = jsonwebtoken_1.default.sign({
+                _id: user._id,
+                role: decodedRefresh.role,
+                email: user.email,
+            }, process.env.TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "15m" });
             res.cookie("accessToken", newAccessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "none",
-                maxAge: 1000 * 60 * 15
+                maxAge: 1000 * 60 * 15,
             });
             console.log("🔁 Access token refreshed for:", decodedRefresh.email || decodedRefresh._id);
             req.user = user;
