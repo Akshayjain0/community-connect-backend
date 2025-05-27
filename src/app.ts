@@ -14,7 +14,7 @@ const app: Application = express();
 app.use(express.json({ limit: "16kb" }));
 app.use(
 	cors({
-		origin: "http://localhost:5173", // must be exact
+		origin: "http://13.202.85.79:8021", // must be exact
 		credentials: true, // allow cookies, auth headers
 	})
 );

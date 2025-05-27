@@ -66,14 +66,14 @@ export const volunteerLoginController = asyncHandler(
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 15 * 60 * 1000, // 15 minutes for Access Token
-			sameSite: "Strict" as unknown as boolean,
+			sameSite: "None" as unknown as boolean,
 		};
 
 		const refreshTokenOptions = {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for Refresh Token
-			sameSite: "Strict" as unknown as boolean,
+			sameSite: "None" as unknown as boolean,
 		};
 
 		const response = new ApiResponse(200, {
