@@ -32,16 +32,15 @@ exports.logOutUser = (0, express_async_handler_1.default)((req, res) => __awaite
         else {
             throw (0, http_errors_1.default)(400, "Invalid user role.");
         }
-        // 🔹 Clear cookies
         res.clearCookie("accessToken", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            secure: false,
+            sameSite: "lax",
         });
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            secure: false,
+            sameSite: "lax",
         });
         res.status(200).json({
             message: "User has been logged out successfully.",

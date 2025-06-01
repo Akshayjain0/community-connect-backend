@@ -20,17 +20,16 @@ export const logOutUser = asyncHandler(async (req: Request, res: Response) => {
 			throw createError(400, "Invalid user role.");
 		}
 
-		// 🔹 Clear cookies
 		res.clearCookie("accessToken", {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "Strict" as unknown as boolean,
+			secure: false,
+			sameSite: "lax" as unknown as boolean,
 		});
 
 		res.clearCookie("refreshToken", {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "Strict" as unknown as boolean,
+			secure: false,
+			sameSite: "lax" as unknown as boolean,
 		});
 
 		res.status(200).json({
